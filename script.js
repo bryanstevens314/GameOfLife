@@ -1,11 +1,13 @@
 let addRow = document.getElementById('add-row');
-let tableElement = document.getElementById("tableElement");
+let clear = document.getElementById('clear');
+let tableElement = document.getElementById('tableElement');
 let selectElement = document.getElementsByTagName('select')[0];
+let bodyElement = document.getElementsByTagName('body')[0];
 let currentColor = 'red';
 
 function makeRow() {
   const tr = document.createElement('tr');
-  let columns = 20;
+  let columns = 50;
   while (columns >= 0) {
     const td = document.createElement('td');
     tr.append(td);
@@ -14,17 +16,42 @@ function makeRow() {
   tableElement.appendChild(tr);
 }
 
-function changeColor(cell) {
-
-}
-
-addRow.addEventListener("click", makeRow);
-tableElement.addEventListener("click", (event) => {
+clear.addEventListener("click", () => {
+  let tableItemsArray = Array.from(document.getElementsByTagName('td'));
+  tableItemsArray.forEach(element => {
+    element.className = 'lightGray';
+  });
+});
+//Row clicked
+addRow.addEventListener('click', makeRow);
+//Table cell clicked
+tableElement.addEventListener('click', event => {
   if (event.target.matches('td')) {
     event.target.className = currentColor;
   }
 });
 
-selectElement.addEventListener("change", (event) => {
+function mouseOverFunc(event) {
+  if (event.target.matches('td')) {
+    event.target.className = currentColor;
+  }
+}
+tableElement.addEventListener('mousedown', event => {
+  if (event.target.matches('td')) {
+    //Moused over change color of cells
+    tableElement.addEventListener('mouseover', mouseOverFunc);
+  }
+});
+let interval = null;
+addRow.addEventListener('mousedown', () => {
+  interval = setInterval(makeRow, 50);
+});
+addRow.addEventListener('mouseup', event => {
+  clearInterval(interval);
+});
+bodyElement.addEventListener('mouseup', () => {
+  tableElement.removeEventListener('mouseover', mouseOverFunc);
+});
+selectElement.addEventListener('change', event => {
   currentColor = event.target.value;
 });
