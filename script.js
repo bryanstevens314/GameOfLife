@@ -46,7 +46,7 @@ let interval = null;
 addRow.addEventListener('mousedown', () => {
   interval = setInterval(makeRow, 50);
 });
-addRow.addEventListener('mouseup', event => {
+addRow.addEventListener('mouseup', () => {
   clearInterval(interval);
 });
 bodyElement.addEventListener('mouseup', () => {
