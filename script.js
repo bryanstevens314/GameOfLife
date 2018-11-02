@@ -6,8 +6,8 @@ let tableElement = document.getElementById('tableElement');
 let selectElement = document.getElementsByTagName('select')[0];
 let bodyElement = document.getElementsByTagName('body')[0];
 let currentColor = 'living';
-let columns = 25;
-let rows = 50;
+let columns = 10;
+let rows = 10;
 let interval = null;
 window.onload = function() {
   let x = rows;
@@ -25,7 +25,8 @@ function calculateNeighbors(x, y) {
     [x + 1, y - 1],
     [x, y - 1],
     [x - 1, y - 1],
-    [x, y - 1],
+    [x - 1, y + 1],
+    [x - 1, y],
   ].filter(pair => {
     return (
       pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns
@@ -46,6 +47,7 @@ function makeRow(x) {
       column: y,
       neighbors: neighbors,
     };
+    td.innerHTML = x + ',' + y;
     tr.append(td);
     y--;
   }
@@ -56,29 +58,27 @@ function startGame() {
   interval = setInterval(() => {
     console.log('fired');
     let tdElements = Array.from(document.getElementsByTagName('td'));
+    let livingCount = 0;
     tdElements.forEach(element => {
       let elementNeighbors = element.obj.neighbors.map(elementCoordinates => {
         return searchForElement.apply(tdElements, elementCoordinates);
       });
-      let livingCount = 0;
+
       elementNeighbors.forEach(neighbors => {
         if (neighbors.living) {
           livingCount++;
         }
       });
-
+      element.innerHTML = livingCount;
       if (livingCount < 2) {
         element.living = false;
         element.className = 'lightgray';
-      }
-      if (livingCount >= 2 && livingCount < 3 && element.living) {
+      } else if (livingCount <= 2 && livingCount >= 3 && element.living) {
         element.living = true;
         element.className = 'living';
-      }
-      if (livingCount === 3 && !element.living) {
+      } else if (livingCount === 3 && !element.living) {
         element.living = true;
-      }
-      if (livingCount > 3) {
+      } else if (livingCount < 3) {
         element.living = false;
         element.className = 'lightgray';
       }
