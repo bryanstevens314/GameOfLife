@@ -7,7 +7,7 @@ let bodyElement = document.getElementsByTagName('body')[0];
 let currentColor = 'red';
 let columns = 25;
 let rows = 50;
-
+let interval = null;
 window.onload = function() {
   let x = rows;
   while (x >= 0) {
@@ -26,7 +26,9 @@ function calculateNeighbors(x, y) {
     [x - 1, y - 1],
     [x, y - 1]
   ].filter(pair => {
-    return pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns;
+    return (
+      pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns
+    );
   });
 }
 
@@ -50,7 +52,37 @@ function makeRow(x) {
   tableElement.appendChild(tr);
 }
 
-function startGame() {}
+function startGame() {
+  interval = setInterval(() => {
+    let tdElements = Array.from(document.getElementsByTagName('td'));
+    tdElements.forEach(element => {
+      let elementNeighbors = element.obj.neighbors.map(elementCoordinates => {
+        return searchForElement.apply(tdElements, elementCoordinates);
+      });
+
+      let livingCount = 0;
+      elementNeighbors.forEach(neighbors => {
+        if (neighbors.living) {
+          livingCount++;
+        }
+      });
+
+      if (livingCount < 2) {
+        element.living = false;
+      } else if (livingCount === 3 && !element.living) {
+        element.living = true;
+      } else if (livingCount > 3) {
+        element.living = false;
+      }
+    });
+  }, 100);
+}
+function searchForElement(x, y) {
+  const search = this.filter(
+    element => element.obj.x === x && element.obj.y === y
+  );
+  return search[0];
+}
 start.addEventListener('click', startGame);
 clear.addEventListener('click', () => {
   let tableItemsArray = Array.from(document.getElementsByTagName('td'));
