@@ -1,10 +1,11 @@
 let addRow = document.getElementById('add-row');
 let clear = document.getElementById('clear');
 let start = document.getElementById('start');
+let stop = document.getElementById('stop');
 let tableElement = document.getElementById('tableElement');
 let selectElement = document.getElementsByTagName('select')[0];
 let bodyElement = document.getElementsByTagName('body')[0];
-let currentColor = 'red';
+let currentColor = 'living';
 let columns = 25;
 let rows = 50;
 let interval = null;
@@ -24,7 +25,7 @@ function calculateNeighbors(x, y) {
     [x + 1, y - 1],
     [x, y - 1],
     [x - 1, y - 1],
-    [x, y - 1]
+    [x, y - 1],
   ].filter(pair => {
     return (
       pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns
@@ -43,9 +44,8 @@ function makeRow(x) {
       living: false,
       row: x,
       column: y,
-      neighbors: neighbors
+      neighbors: neighbors,
     };
-    console.dir(td);
     tr.append(td);
     y--;
   }
@@ -54,12 +54,12 @@ function makeRow(x) {
 
 function startGame() {
   interval = setInterval(() => {
+    console.log('fired');
     let tdElements = Array.from(document.getElementsByTagName('td'));
     tdElements.forEach(element => {
       let elementNeighbors = element.obj.neighbors.map(elementCoordinates => {
         return searchForElement.apply(tdElements, elementCoordinates);
       });
-
       let livingCount = 0;
       elementNeighbors.forEach(neighbors => {
         if (neighbors.living) {
@@ -69,21 +69,32 @@ function startGame() {
 
       if (livingCount < 2) {
         element.living = false;
-      } else if (livingCount === 3 && !element.living) {
+        element.className = 'lightgray';
+      }
+      if (livingCount >= 2 && livingCount < 3 && element.living) {
         element.living = true;
-      } else if (livingCount > 3) {
+        element.className = 'living';
+      }
+      if (livingCount === 3 && !element.living) {
+        element.living = true;
+      }
+      if (livingCount > 3) {
         element.living = false;
+        element.className = 'lightgray';
       }
     });
-  }, 100);
+  }, 1000);
 }
 function searchForElement(x, y) {
   const search = this.filter(
-    element => element.obj.x === x && element.obj.y === y
+    element => element.obj.row === x && element.obj.column === y
   );
   return search[0];
 }
 start.addEventListener('click', startGame);
+stop.addEventListener('click', () => {
+  clearInterval(interval);
+});
 clear.addEventListener('click', () => {
   let tableItemsArray = Array.from(document.getElementsByTagName('td'));
   tableItemsArray.forEach(element => {
@@ -96,12 +107,14 @@ addRow.addEventListener('click', makeRow);
 tableElement.addEventListener('click', event => {
   if (event.target.matches('td')) {
     event.target.className = currentColor;
+    event.target.living = true;
   }
 });
 
 function mouseOverFunc(event) {
   if (event.target.matches('td')) {
     event.target.className = currentColor;
+    event.target.living = true;
   }
 }
 tableElement.addEventListener('mousedown', event => {
@@ -110,7 +123,6 @@ tableElement.addEventListener('mousedown', event => {
     tableElement.addEventListener('mouseover', mouseOverFunc);
   }
 });
-let interval = null;
 addRow.addEventListener('mousedown', () => {
   interval = setInterval(makeRow, 50);
 });

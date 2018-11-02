@@ -27,6 +27,10 @@ tr>td {
   width: 20px;
 }
 
+.living {
+  background-color: black;
+}
+
 .lightgray {
   background-color: lightgray;
 }
