@@ -7,7 +7,7 @@ let bodyElement = document.getElementsByTagName('body')[0];
 let currentColor = 'red';
 let columns = 25;
 let rows = 50;
-
+let interval = null;
 window.onload = function() {
   let x = rows;
   while (x >= 0) {
@@ -25,9 +25,11 @@ function calculateNeighbors(x, y) {
     [x + 1, y - 1],
     [x, y - 1],
     [x - 1, y - 1],
-    [x, y - 1]
+    [x, y - 1],
   ].filter(pair => {
-    return pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns;
+    return (
+      pair[0] >= 0 && pair[0] <= rows && pair[1] >= 0 && pair[1] <= columns
+    );
   });
 }
 
@@ -39,17 +41,40 @@ function makeRow(x) {
     const td = document.createElement('td');
     const neighbors = calculateNeighbors(x, y);
     td.obj = {
+      living: false,
       row: x,
       column: y,
-      neighbors: neighbors
+      neighbors: neighbors,
     };
+    console.dir(td.obj);
     tr.append(td);
     y--;
   }
   tableElement.appendChild(tr);
 }
 
-function startGame() {}
+function startGame() {
+  interval = setInterval(()=>{
+    let tdElements = Array.from(document.getElementsByTagName('td'));
+    tdElements.forEach(element => {
+
+      let elementNeighbors = element.obj.neighbors;
+      let livingCount = 0;
+      elementNeighbors.forEach(element => {
+
+        if (element.living){
+          livingCount++;
+        }
+        searchForDead.apply(tdElements,element);
+      });
+    });
+  },100);
+}
+function searchForDead(x,y){
+  this.filter(element=>{
+    element.obj.x =
+  });
+}
 start.addEventListener('click', startGame);
 clear.addEventListener('click', () => {
   let tableItemsArray = Array.from(document.getElementsByTagName('td'));
