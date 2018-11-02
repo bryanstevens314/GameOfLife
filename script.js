@@ -18,7 +18,6 @@ window.onload = function() {
 
 function calculateNeighbors(x, y) {
   return [
-    [x, y],
     [x, y + 1],
     [x + 1, y + 1],
     [x + 1, y],
@@ -39,10 +38,12 @@ function makeRow(x) {
     const td = document.createElement('td');
     const neighbors = calculateNeighbors(x, y);
     td.obj = {
+      living: false,
       row: x,
       column: y,
       neighbors: neighbors
     };
+    console.dir(td);
     tr.append(td);
     y--;
   }
